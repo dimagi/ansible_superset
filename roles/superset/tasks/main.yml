@@ -1,0 +1,119 @@
+---
+
+- name: Test
+  command: echo it works!
+
+# # Swap
+
+# - include_tasks: create_swap_file.yml
+#   when: swap_file_enabled
+#   tags: swap
+
+# # Packages
+
+# - name: Install security updates.
+#   apt:
+#     default_release: "{{ ansible_distribution_release }}-security"
+#     update_cache: "{{ apt_update_cache }}"
+#     upgrade: dist
+#   tags:
+#     - packages
+#     - packages.security
+#     - skip_ansible_lint
+#   when: env != 'dev'
+
+# - name: Install base packages.
+#   apt:
+#     name:
+#       - locales
+#       - build-essential
+#       - acl
+#       - ntp
+#       - htop
+#       - git
+#       - vim
+#       - screen
+#       - curl
+#       - "{{ base_python_package }}-virtualenv"
+#       - "{{ base_python_package }}-pip"
+#       - "{{ base_python_package }}"
+#       - supervisor
+#       - libpq-dev
+#     update_cache: "{{ apt_update_cache }}"
+#     state: present
+#   tags:
+#     - packages
+#     - skip_ansible_lint
+
+
+# # Python
+
+# - include_tasks: python.yml
+#   tags: python
+
+
+# # Users & Groups
+
+# - name: Create the app group.
+#   group:
+#     name: "{{ app_group }}"
+#     system: yes
+#     state: present
+
+# - name: Create the app user.
+#   user:
+#     name: "{{ app_user }}"
+#     group: "{{ app_group }}"
+#     shell: /bin/bash
+#     state: present
+
+# - name: Create {{ base_dir }} folder.
+#   file:
+#     path: "{{ base_dir }}"
+#     group: "{{ app_group }}"
+#     mode: 0755
+#     state: directory
+
+# - name: Create the app folders.
+#   file:
+#     path: "{{ item }}"
+#     owner: "{{ app_user }}"
+#     group: "{{ app_group }}"
+#     mode: 0750
+#     state: directory
+#   with_items:
+#     - "{{ log_dir }}"
+
+# # Database
+
+# - include_tasks: postgres.yml
+#   tags: postgres
+
+# # NGINX
+
+# - include_tasks: nginx.yml
+#   tags: nginx
+
+
+# - include_tasks: letsencrypt_cert.yml
+#   tags: letsencrypt
+#   when: env != 'dev'
+
+# Superset
+
+- include_tasks: superset.yml
+  tags:
+    - superset
+    - superset-admin
+    - yomo
+
+# logging
+
+- include_tasks: logrotate.yml
+  tags: logging
+
+- include_tasks: pg_backup.yml
+  tags: postgres_backup
+  when: postgresql_backup_enabled
+
+...

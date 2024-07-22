@@ -1,0 +1,8 @@
+PUBLIC_ROLE_LIKE_GAMMA = True
+SQLALCHEMY_DATABASE_URI = '{{ SQLALCHEMY_DATABASE_URI }}'
+SECRET_KEY = '{{ superset_secret_key }}'
+FEATURE_FLAGS = {
+{% for flag in superset_feature_flags %}
+    '{{ flag }}': True,
+    {% endfor %}
+}

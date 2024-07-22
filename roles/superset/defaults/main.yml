@@ -1,0 +1,85 @@
+---
+
+env: "dev"
+ansible_python_interpreter: /usr/bin/python3
+base_python_package: "python3"
+
+apt_update_cache: yes
+
+swap_file_enabled: yes
+swap_file: /swapfile
+swap_file_size_kb: 512
+
+ssl_enabled: no
+app_name: ccc_superset
+project_name: "{{ app_name }}"
+app_user: "{{ app_name }}"
+home_dir: /home/{{ app_user }}
+app_group: webapps
+base_dir: "{{home_dir}}/www"
+src_dir: "{{ base_dir }}/{{ project_name }}/code_root"
+virtualenv_dir: "{{ base_dir }}/.virtualenvs/{{ project_name }}"
+virtualenv_python_version: python3.10
+
+run_dir: "{{ base_dir }}/run"
+log_dir: "{{ base_dir }}/log"
+static_dir: "{{ src_dir }}/static_root"
+media_dir: "{{ src_dir }}/media"
+
+# superset defaults
+superset_ssl_enabled: no
+superset_db_name: "superset_meta"
+superset_project_dir: "{{ base_dir }}/superset"
+superset_virtualenv_dir: "{{ base_dir }}/.virtualenvs/superset"
+superset_username: admin
+superset_firstname: Admin
+superset_lastname: User
+superset_email: superset-admin@example.com
+superset_password: "{{ vault_superset_admin_password }}"
+superset_feature_flags: []
+
+superset_meta_db_user: superset
+superset_meta_db_password: "{{ vault_superset_meta_db_password}}"
+superset_meta_db_host: 127.0.0.1
+superset_meta_db_port: 5432
+sentry_dsn: "{{ vault_sentry_dsn }}"
+superset_secret_key: "{{ vault_superset_secret_key }}"
+
+postgresql_version: 14
+postgresql_user: postgres
+postgresql_allow_remote_connections: no
+
+# Database backup variables
+postgresql_backup_enabled: false
+postgresql_backup_dir: "/var/tmp"
+postgresql_backup_db_list: "{{superset_db_name}}"
+postgresql_user_home_dir: "/var/lib/postgresql"
+
+default_db_name: "superset_meta"
+default_db_user: "ccc_superset"
+default_db_password: "{{ vault_default_db_password }}"
+default_db_host: 127.0.0.1
+default_db_port: 5432
+
+SQLALCHEMY_DATABASE_URI: 'postgresql://{{ default_db_user }}:{{ default_db_password }}@{{ default_db_host }}:{{ default_db_port }}/{{ default_db_name }}'
+SECRET_KEY: '{{ vault_superset_secret_key }}'
+
+superset_environment:
+  FLASK_APP: superset
+  SUPERSET_CONFIG_PATH: '{{ superset_project_dir }}/superset_config.py'
+  
+
+nginx_access_log_file: "{{ log_dir }}/nginx.access.log"
+nginx_error_log_file: "{{ log_dir }}/nginx.error.log"
+
+gunicorn_timeout_seconds: 30
+
+certbot_auto_renew: yes
+certbot_script: /opt/certbot-auto
+certbot_dir: /etc/letsencrypt
+certbot_admin_email: admin@example.com
+certbot_domains:
+  - example.com
+  - www.example.com
+
+...

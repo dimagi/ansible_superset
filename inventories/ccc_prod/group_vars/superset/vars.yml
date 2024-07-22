@@ -1,0 +1,30 @@
+---
+
+ssl_enabled: no
+
+# superset defaults
+superset_ssl_enabled: no
+superset_db_name: "superset_meta"
+superset_username: admin
+superset_firstname: Admin
+superset_lastname: User
+superset_email: devops+ccc@dimagi.com
+superset_feature_flags: []
+
+superset_meta_db_user: superset
+superset_meta_db_host: 127.0.0.1
+superset_meta_db_port: 5432
+
+nginx_access_log_file: "{{ log_dir }}/nginx.access.log"
+nginx_error_log_file: "{{ log_dir }}/nginx.error.log"
+
+public_host: connect-superset.dimagi.com
+
+certbot_auto_renew: yes
+certbot_script: /opt/certbot-auto
+certbot_dir: /etc/letsencrypt
+certbot_admin_email: admin@example.com
+certbot_domains:
+  - connect-superset.dimagi.com
+
+...
