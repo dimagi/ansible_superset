@@ -34,6 +34,8 @@
       - gunicorn
       - gevent
   tags: superset
+  environment:
+    SETUPTOOLS_USE_DISTUTILS: stdlib
 
 # Create config directory and files
 
@@ -83,6 +85,15 @@
 
 # Supervisor files
 
+- name: Install Supervisor
+  ansible.builtin.apt:
+    name: supervisor
+    state: present
+    update_cache: yes
+  tags:
+    - superset
+    - yomo
+
 - name: Create the Supervisor start script.
   template:
     src: superset/superset_start_script.j2
@@ -93,11 +104,33 @@
     backup: yes
   tags: superset
 
+- name: Ensure Supervisor configuration directory exists
+  ansible.builtin.file:
+    path: /etc/supervisor/conf.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  tags:
+    - superset
+    - yomo
+
 - name: Create the Superset Supervisor config file.
   template:
     src: superset/superset_supervisor_config.j2
     dest: /etc/supervisor/conf.d/superset.conf
     backup: yes
+  tags:
+    - superset
+    - yomo
+
+- name: Ensure Superset log directory exists
+  ansible.builtin.file:
+    path: /home/ccc_superset/www/log
+    state: directory
+    owner: ccc_superset
+    group: ccc_superset
+    mode: '0755'
   tags:
     - superset
     - yomo
@@ -130,6 +163,33 @@
     - superset
   tags: superset
 
+- name: Install Nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: yes
+  tags:
+    - superset
+    - nginx
+
+- name: Ensure Nginx is started and enabled
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: yes
+  tags:
+    - superset
+    - nginx
+
+- name: Create superset nginx config.
+  template:
+    src: nginx/superset_nginx_without_ssl_config.j2
+    dest: /etc/nginx/sites-available/superset.conf
+    backup: yes
+  when: "not superset_ssl_enabled"
+  tags:
+    - superset
+    - nginx
 
 - name: Create superset nginx config.
   template:
